@@ -26,8 +26,6 @@ class MusicGenerator:
             print(f"✓ Replicate API key loaded: {self.replicate_key[:10]}...")
         else:
             print("✗ No Replicate API key found. Set REPLICATE_API_TOKEN environment variable.")
-        else:
-            print("✗ No Replicate API key found")
         
     def generate_music(
         self,
