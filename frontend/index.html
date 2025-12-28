@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reel Music Generator - AI-Powered Music for Your Videos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .file-upload {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .file-upload:hover {
+            background: #eef0ff;
+            border-color: #5568d3;
+        }
+
+        .file-upload.active {
+            background: #eef0ff;
+            border-color: #5568d3;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .file-upload-hint {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #28a745;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .progress {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            animation: indeterminate 1.5s infinite;
+            width: 30%;
+        }
+
+        @keyframes indeterminate {
+            0% { margin-left: -30%; }
+            100% { margin-left: 100%; }
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .success-message {
+            display: none;
+            padding: 20px;
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            color: #155724;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            display: none;
+            padding: 20px;
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            color: #721c24;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #0d47a1;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Login Screen Styles */
+        #loginScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .login-box h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-box p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .login-error {
+            display: none;
+            color: #dc3545;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        #mainApp {
+            display: none;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <div class="login-icon">🔒</div>
+            <h2>Reel Music Generator</h2>
+            <p>Enter password to continue</p>
+            <form onsubmit="handleLogin(event)">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Enter password" 
+                    required
+                    autocomplete="current-password"
+                >
+                <button type="submit" class="login-btn">Login</button>
+                <div class="login-error" id="loginError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App (Hidden until authenticated) -->
+    <div id="mainApp">
+    <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🎵</div>
+            <h1>Reel Music Generator</h1>
+            <p>Upload your video and get AI-generated, royalty-free music instantly</p>
+        </div>
+
+        <div class="info-box">
+            ✨ <strong>100% Original Music</strong> - No copyright issues, use commercially
+        </div>
+
+        <form id="uploadForm">
+            <!-- Video Upload -->
+            <div class="form-group">
+                <label>Video File *</label>
+                <div class="file-upload" id="videoUpload">
+                    <div class="file-upload-icon">🎬</div>
+                    <div class="file-upload-text">Click to upload your video</div>
+                    <div class="file-upload-hint">MP4, MOV, AVI, MKV (max 100MB)</div>
+                    <input type="file" id="videoFile" accept="video/*" required>
+                    <div class="file-name" id="videoFileName"></div>
+                </div>
+            </div>
+
+            <!-- Music Style -->
+            <div class="form-group">
+                <label for="style">Music Style</label>
+                <select id="style" name="style">
+                    <option value="ambient">🌙 Ambient</option>
+                    <option value="energetic">⚡ Energetic</option>
+                    <option value="epic">🔥 Epic</option>
+                    <option value="happy">😊 Happy</option>
+                    <option value="chill">😎 Chill</option>
+                    <option value="dramatic">🎭 Dramatic</option>
+                    <option value="upbeat">🎉 Upbeat</option>
+                    <option value="inspiring">✨ Inspiring</option>
+                    <option value="cinematic">🎬 Cinematic</option>
+                    <option value="electronic">🎹 Electronic</option>
+                    <option value="hip-hop">🎤 Hip-Hop</option>
+                    <option value="lofi">☕ Lo-Fi</option>
+                    <option value="rock">🎸 Rock</option>
+                </select>
+            </div>
+
+            <!-- Reference Audio (Optional) -->
+            <div class="form-group">
+                <label>Reference Song/Video (Optional)</label>
+                <div class="file-upload" id="referenceUpload">
+                    <div class="file-upload-icon">🎼</div>
+                    <div class="file-upload-text">Upload inspiration audio/video</div>
+                    <div class="file-upload-hint">MP3, WAV, MP4, MOV - AI will match the vibe</div>
+                    <input type="file" id="referenceFile" accept="audio/*,video/*">
+                    <div class="file-name" id="referenceFileName"></div>
+                </div>
+            </div>
+
+            <!-- Output Format -->
+            <div class="form-group">
+                <label for="outputFormat">Download As</label>
+                <select id="outputFormat" name="outputFormat">
+                    <option value="video">📹 Video with Music</option>
+                    <option value="audio">🎵 Audio Only (WAV)</option>
+                    <option value="both">📦 Both (ZIP File)</option>
+                </select>
+            </div>
+
+            <!-- Remove Original Audio -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="removeAudio" name="removeAudio" checked>
+                    <label for="removeAudio">Remove original video audio</label>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Generate Music 🎵
+            </button>
+        </form>
+
+        <!-- Progress Indicator -->
+        <div class="progress" id="progress">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Analyzing video and generating music...</div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            ✅ Music generated successfully!
+            <a href="#" class="download-btn" id="downloadBtn">Download</a>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-text">AI-Powered Music Generation</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">Fast Processing</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <div class="feature-text">Royalty-Free</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-text">16 Music Styles</div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // Automatically detect API URL - works both locally and in production
+        const API_URL = window.location.origin;
+
+        // Check if user is authenticated
+        function isAuthenticated() {
+            return localStorage.getItem('app_auth') === 'true';
+        }
+
+        // Show/hide login screen
+        function checkAuth() {
+            if (!isAuthenticated()) {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
+            } else {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+            }
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            
+            // Store credentials for API calls
+            localStorage.setItem('app_password', password);
+            
+            // Test auth by making a simple request
+            fetch(`${API_URL}/health`)
+                .then(response => {
+                    if (response.ok) {
+                        localStorage.setItem('app_auth', 'true');
+                        checkAuth();
+                    } else {
+                        document.getElementById('loginError').textContent = 'Incorrect password';
+                        document.getElementById('loginError').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    // Assume password is set, we'll verify on actual API call
+                    localStorage.setItem('app_auth', 'true');
+                    checkAuth();
+                });
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('app_auth');
+            localStorage.removeItem('app_password');
+            checkAuth();
+        }
+
+        // Initialize auth check on page load
+        window.addEventListener('DOMContentLoaded', checkAuth);
+
+        // File upload handlers
+        document.getElementById('videoUpload').addEventListener('click', () => {
+            document.getElementById('videoFile').click();
+        });
+
+        document.getElementById('referenceUpload').addEventListener('click', () => {
+            document.getElementById('referenceFile').click();
+        });
+
+        document.getElementById('videoFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('videoFileName').textContent = `✓ ${file.name}`;
+                document.getElementById('videoUpload').classList.add('active');
+            }
+        });
+
+        document.getElementById('referenceFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('referenceFileName').textContent = `✓ ${file.name}`;
+                document.getElementById('referenceUpload').classList.add('active');
+            }
+        });
+
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const videoFile = document.getElementById('videoFile').files[0];
+            if (!videoFile) {
+                showError('Please select a video file');
+                return;
+            }
+
+            // Check file size (100MB limit)
+            if (videoFile.size > 100 * 1024 * 1024) {
+                showError('Video file is too large. Maximum size is 100MB');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', videoFile);
+            formData.append('style', document.getElementById('style').value);
+            formData.append('output_format', document.getElementById('outputFormat').value);
+            formData.append('remove_original_audio', document.getElementById('removeAudio').checked);
+
+            const referenceFile = document.getElementById('referenceFile').files[0];
+            if (referenceFile) {
+                formData.append('reference_audio', referenceFile);
+            }
+
+            // Show progress
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('submitBtn').textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`${API_URL}/process-reel`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('user:' + localStorage.getItem('app_password'))
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    
+                    // If authentication failed, logout
+                    if (response.status === 401) {
+                        logout();
+                        showError('Session expired. Please login again.');
+                        return;
+                    }
+                    
+                    throw new Error(error.detail || 'Processing failed');
+                }
+
+                // Get the blob and create download link
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                // Determine filename based on output format
+                const outputFormat = document.getElementById('outputFormat').value;
+                let filename;
+                if (outputFormat === 'audio') {
+                    filename = 'reel_music.wav';
+                } else if (outputFormat === 'both') {
+                    filename = 'reel_package.zip';
+                } else {
+                    filename = 'reel_with_music.mp4';
+                }
+
+                // Show success message with download button
+                document.getElementById('progress').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.href = url;
+                downloadBtn.download = filename;
+
+                // Reset form
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Generate Music 🎵';
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+                document.getElementById('progress').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Generate Music 🎵';
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = `❌ ${message}`;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
